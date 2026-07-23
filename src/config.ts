@@ -4,6 +4,7 @@
 
 interface KWorkspacesConfig {
     keepEmptyMiddleDesktops: boolean;
+    maxDesktops: number;
 }
 
 function readBool(key: string, fallback: boolean): boolean {
@@ -15,8 +16,15 @@ function readBool(key: string, fallback: boolean): boolean {
     return text === "true" || text === "1";
 }
 
+function readInt(key: string, fallback: number): number {
+    const raw = readConfig(key, fallback);
+    const value = typeof raw === "number" ? raw : parseInt(String(raw), 10);
+    return isNaN(value) ? fallback : value;
+}
+
 function loadConfig(): KWorkspacesConfig {
     return {
         keepEmptyMiddleDesktops: readBool("keepEmptyMiddleDesktops", false),
+        maxDesktops: Math.max(2, readInt("maxDesktops", 20)),
     };
 }

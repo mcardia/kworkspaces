@@ -2,7 +2,7 @@
     "KPackageStructure": "KWin/Script",
     "KPlugin": {
         "Name": "KWorkspaces",
-        "Description": "Keeps one empty desktop at the end, creating and removing desktops as windows move onto or off of it",
+        "Description": "Keeps one empty desktop margin on every side (up/down/left/right), creating and removing desktops as windows move onto or off the edges",
         "Icon": "preferences-system-windows",
         "Authors": [
             {
@@ -13,7 +13,7 @@
         "Id": "kworkspaces",
         "Category": "Window Management",
         "License": "MIT",
-        "Version": "1.0.0",
+        "Version": "1.1.0",
         "Website": "https://github.com/mcardia/kworkspaces"
     },
     "X-Plasma-API": "javascript",

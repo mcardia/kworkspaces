@@ -8,5 +8,9 @@
         <entry name="keepEmptyMiddleDesktops" type="Bool">
             <default>false</default>
         </entry>
+        <entry name="maxDesktops" type="Int">
+            <default>20</default>
+            <min>2</min>
+        </entry>
     </group>
 </kcfg>
