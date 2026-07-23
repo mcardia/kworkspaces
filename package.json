@@ -1,0 +1,14 @@
+{
+  "name": "kwin-kworkspaces",
+  "version": "1.0.0",
+  "description": "KWin script that keeps one empty desktop at the end, creating and removing desktops as windows move onto or off of it",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
