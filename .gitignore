@@ -1,3 +1,2 @@
-**/.*.swp
-**/.*.un~
-dynamic_workspaces.tar.gz
+node_modules/
+*.tsbuildinfo
