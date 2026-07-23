@@ -65,3 +65,9 @@ System Settings → Window Management → KWin Scripts → **KWorkspaces** → c
 - Multi-monitor "separate virtual desktops per screen" was not verified live (this was
   developed and tested on a single-monitor session) — treat as unverified rather than
   supported if you use that mode.
+- Removing a desktop in the middle was verified to leave desktop count and window
+  placement correct (see Features above), driven programmatically via KWin's D-Bus
+  interface during development. Whether the pager-switch animation itself plays
+  smoothly (the actual motivation for the shift-then-remove-last workaround) was not
+  independently confirmed by visual observation — worth a quick look next time you
+  purge a middle desktop, though the mechanism is a faithful port of the upstream fix.
