@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "KWin/Script",
+    "KPlugin": {
+        "Name": "KWorkspaces",
+        "Description": "Keeps one empty desktop at the end, creating and removing desktops as windows move onto or off of it",
+        "Icon": "preferences-system-windows",
+        "Authors": [
+            {
+                "Name": "Mario",
+                "Email": ""
+            }
+        ],
+        "Id": "kworkspaces",
+        "Category": "Window Management",
+        "License": "MIT",
+        "Version": "1.0.0",
+        "Website": "https://github.com/mcardia/kworkspaces"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js",
+    "X-KDE-ConfigModule": "kwin/effects/configs/kcm_kwin4_genericscripted"
+}
