@@ -61,6 +61,15 @@ fi
 # 2) Install / upgrade the KWin script package.
 if command -v kpackagetool6 >/dev/null 2>&1; then
     if kpackagetool6 --type KWin/Script --list 2>/dev/null | grep -qx "$SCRIPT_ID"; then
+        # Disable first: upgrading an already-enabled script's files on disk
+        # does NOT force the already-running instance to reload the new
+        # code -- only a disable+enable cycle does (confirmed live while
+        # developing the grid-expansion feature; --upgrade + reconfigure
+        # alone silently kept running the old code).
+        if command -v kwriteconfig6 >/dev/null 2>&1; then
+            kwriteconfig6 --file kwinrc --group Plugins --key "${SCRIPT_ID}Enabled" false
+            qdbus_cli org.kde.KWin /KWin reconfigure 2>/dev/null || true
+        fi
         kpackagetool6 --type KWin/Script --upgrade "$PKG" >/dev/null
         c_ok "upgraded KWin script '$SCRIPT_ID'"
     else

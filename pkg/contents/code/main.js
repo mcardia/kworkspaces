@@ -204,33 +204,50 @@ function shrinkRow(index) {
 }
 // Shrinks (removes) column `index`, which the caller has already confirmed
 // is empty. A column is strided, so this cannot reuse removeDesktopAt's
-// single-boundary loop the way shrinkRow does (that would shift content
-// across row boundaries incorrectly). Instead: first close each row's own
-// internal gap in isolation (window reassignment only, capturing `cols`
-// once so every row's math stays consistent even as later removals shrink
-// the array), which leaves each row's own last slot vacated; then physically
-// remove those now-vacated slots, from the LAST row to the FIRST (mirroring
-// growColumn's insertion order) so each target index is still valid when
-// its turn comes.
+// single-boundary shift loop the way shrinkRow does: removeDesktopAt's shift
+// is global (boundary to the current tail), and once one row's target has
+// already been removed via the tail, a second row's removeDesktopAt call
+// would shift the array across that row's own boundary into the NEXT row's
+// territory, corrupting which window ends up on which desktop (found via
+// live testing -- confirmed by a real window ending up reassigned to the
+// wrong row).
+//
+// Instead: compute the ENTIRE new row-major layout in a single direct
+// mapping pass (for each row, each kept new-column c should receive the
+// window that was at old-column c, or c+1 if c is at-or-past the removed
+// index) and reassign every window once, in one pass -- never a sequence of
+// pairwise shifts that could bleed across row boundaries once the array has
+// already been shortened by an earlier removal. This always leaves exactly
+// the LAST `rows` desktop objects vacated (nothing ever maps onto them),
+// safe to remove via a plain tail-only loop with no shift needed at all.
 function shrinkColumn(index) {
     const cols = workspace.desktopGridWidth;
     const rows = workspace.desktopGridHeight;
+    const newCols = cols - 1;
+    const allDesktops = workspace.desktops;
     const windows = workspace.windowList();
+    const mapping = allDesktops.map(function () {
+        return null;
+    });
     for (let r = 0; r < rows; r++) {
-        const rowStart = r * cols;
-        const rowLen = Math.min(cols, workspace.desktops.length - rowStart);
-        if (rowLen <= index + 1) {
-            continue; // ragged row that doesn't reach past the target column
+        for (let c = 0; c < newCols; c++) {
+            const oldCol = c < index ? c : c + 1;
+            const oldRaw = r * cols + oldCol;
+            const newRaw = r * newCols + c;
+            if (oldRaw < allDesktops.length && newRaw < allDesktops.length) {
+                mapping[oldRaw] = allDesktops[newRaw];
+            }
         }
-        shiftWindowsBy(windows, workspace.desktops, [rowStart + index + 1, rowStart + rowLen - 1], -1);
     }
-    for (let r = rows - 1; r >= 0; r--) {
-        const rowStart = r * cols;
-        const rowLen = Math.min(cols, workspace.desktops.length - rowStart);
-        if (rowLen <= index) {
-            continue; // ragged row that never had this column at all
-        }
-        removeDesktopAtOrTail(rowStart + rowLen - 1);
+    windows.forEach(function (win) {
+        win.desktops = win.desktops.map(function (d) {
+            const raw = allDesktops.indexOf(d);
+            const dest = raw >= 0 ? mapping[raw] : null;
+            return dest || d;
+        });
+    });
+    for (let i = 0; i < rows; i++) {
+        removeLastDesktopSafely();
     }
 }
 // Entry point: wires KWin signals to updateLayout(), the centralized 2D grid
